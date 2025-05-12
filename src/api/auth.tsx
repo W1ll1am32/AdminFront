@@ -10,7 +10,7 @@ export const ValidateInitData = async (initData: string): Promise<boolean> => {
             },
             body: JSON.stringify({
                 initData: initData,
-                role: "Tutor"
+                role: "Admin"
             })
         });
 

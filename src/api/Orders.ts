@@ -91,9 +91,13 @@ export const sendData = async (userdata: string): Promise<string | null> => {
 
 export const getOrders = async (): Promise<Order[] | null> => {
     try {
+        const AuthToken = localStorage.getItem("token");
+        if (!AuthToken) {
+            return null // navigate auth page
+        }
         const ResponseOrders = await fetch("https://lessonsmy.tech/api/admins/orders", {
             method: "GET",
-            headers: {"Authorization": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmU3N2IxZWEtODA3Zi00M2M1LWEwNjUtOTJhYTQ1N2Q0MDExIiwidXNlcm5hbWUiOiJRcGlzayIsInRlbGVncmFtX2lkIjo1MDY2NDU1NDIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc0NzExMDMyN30.9_uIPlkCfLLl35KMzZ4ZXV3_gpcB1CEp80_qs8KEQqY'}
+            headers: {"Authorization": AuthToken },
             });
 
         console.log("Response status:", ResponseOrders.status);
@@ -115,13 +119,13 @@ export const getOrders = async (): Promise<Order[] | null> => {
 
 export const Activate = async (id: string): Promise<boolean> => {
     try {
+        const AuthToken = localStorage.getItem("token");
+        if (!AuthToken) {
+            return false // navigate auth page
+        }
         const ResponseOrders = await fetch(`https://lessonsmy.tech/api/admins/approve/order/id/${id}`, {
             method: "POST",
-            body: JSON.stringify({
-                "initData": "user=%7B%22id%22%3A506645542%2C%22first_name%22%3A%22%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Qpisk%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2Fvcyf1GN_IZljdIiW8Z7XVz4O5yGsPLA4UCi9CKk3q5c.svg%22%7D&chat_instance=9021293784835571208&chat_type=private&auth_date=1735911385&signature=2u3G0CLvUQxLlBRs70Ps-yFusrmKhgv4m6gMA5dVwvuHMgzJXp8Um22IevLQ6Y-CmKB22gUZkWsFqe-FbTdyDg&hash=97eb5ad6b6e180bc2a7dc27d382ca606cc9b066ec6ae621228b257821fe9e4bc",
-                "role": "Admin",
-            }),
-            headers: {"Authorization": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmU3N2IxZWEtODA3Zi00M2M1LWEwNjUtOTJhYTQ1N2Q0MDExIiwidXNlcm5hbWUiOiJRcGlzayIsInRlbGVncmFtX2lkIjo1MDY2NDU1NDIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc0NzExMDMyN30.9_uIPlkCfLLl35KMzZ4ZXV3_gpcB1CEp80_qs8KEQqY',
+            headers: {"Authorization": AuthToken,
                 'Content-Type': 'application/json'},
         });
 
