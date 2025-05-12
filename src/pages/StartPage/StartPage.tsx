@@ -27,7 +27,7 @@ export const StartPage: FC = () => {
                 // Класть init data куда-то?
                 const request_status = await ValidateInitData(initDataRaw);
                 if (request_status) {
-                    navigate('/orders');
+                    alert('Авторизация успешна');
                 } else {
                     console.error('Authorization failed');
                     alert('Не удалось выполнить авторизацию.');
