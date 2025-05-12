@@ -1,4 +1,4 @@
-import {OrderPagination, OrderDetails, Responses, TutorProfile} from "@/models/Order.ts";
+import {Order, Responses, TutorProfile} from "@/models/Order.ts";
 
 const api_link: string = 'https://lessonsmy.tech/api';
 
@@ -89,30 +89,12 @@ export const sendData = async (userdata: string): Promise<string | null> => {
     }
 }
 
-export const getOrders = async (userdata: string, limit: number, page: number, tag: string | null): Promise<OrderPagination | null> => {
+export const getOrders = async (): Promise<Order[] | null> => {
     try {
-        const AuthToken = localStorage.getItem("token");
-        if (!AuthToken || !userdata) {
-            return null // navigate auth page
-        }
-        if (isTokenExpired(AuthToken)) {
-            const token = await getToken(userdata);
-            if (token) {
-                localStorage.setItem('token', token);
-            } else {
-                return null;
-            }
-        }
-        let query = ``;
-        if (tag) {
-            query = `${api_link}/orders/pagination?size=${limit}&page=${page}&tag=${tag}`;
-        } else {
-            query = `${api_link}/orders/pagination?size=${limit}&page=${page}`;
-        }
-        const ResponseOrders = await fetch(query, {
+        const ResponseOrders = await fetch("https://lessonsmy.tech/api/admins/orders", {
             method: "GET",
-            headers: {"Authorization": AuthToken },
-        });
+            headers: {"Authorization": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmU3N2IxZWEtODA3Zi00M2M1LWEwNjUtOTJhYTQ1N2Q0MDExIiwidXNlcm5hbWUiOiJRcGlzayIsInRlbGVncmFtX2lkIjo1MDY2NDU1NDIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc0NzExMDMyN30.9_uIPlkCfLLl35KMzZ4ZXV3_gpcB1CEp80_qs8KEQqY'}
+            });
 
         console.log("Response status:", ResponseOrders.status);
         console.log("Response headers:", ResponseOrders.headers);
@@ -131,40 +113,29 @@ export const getOrders = async (userdata: string, limit: number, page: number, t
     }
 }
 
-export const getOrderById = async (id: string, userdata: string): Promise<OrderDetails | null> => {
+export const Activate = async (id: string): Promise<boolean> => {
     try {
-        const AuthToken = localStorage.getItem("token");
-        if (!AuthToken || !userdata) {
-            return null // navigate auth page
-        }
-        if (isTokenExpired(AuthToken)) {
-            const token = await getToken(userdata);
-            if (token) {
-                localStorage.setItem('token', token);
-            } else {
-                return null;
-            }
-        }
-        const ResponseOrder = await fetch(`${api_link}/orders/mini/id/${id}`, {
-            method: "GET",
-            headers: {"Authorization": AuthToken },
+        const ResponseOrders = await fetch(`https://lessonsmy.tech/api/admins/approve/order/id/${id}`, {
+            method: "POST",
+            body: JSON.stringify({
+                "initData": "user=%7B%22id%22%3A506645542%2C%22first_name%22%3A%22%D0%9A%D0%B8%D1%80%D0%B8%D0%BB%D0%BB%22%2C%22last_name%22%3A%22%22%2C%22username%22%3A%22Qpisk%22%2C%22language_code%22%3A%22ru%22%2C%22allows_write_to_pm%22%3Atrue%2C%22photo_url%22%3A%22https%3A%5C%2F%5C%2Ft.me%5C%2Fi%5C%2Fuserpic%5C%2F320%5C%2Fvcyf1GN_IZljdIiW8Z7XVz4O5yGsPLA4UCi9CKk3q5c.svg%22%7D&chat_instance=9021293784835571208&chat_type=private&auth_date=1735911385&signature=2u3G0CLvUQxLlBRs70Ps-yFusrmKhgv4m6gMA5dVwvuHMgzJXp8Um22IevLQ6Y-CmKB22gUZkWsFqe-FbTdyDg&hash=97eb5ad6b6e180bc2a7dc27d382ca606cc9b066ec6ae621228b257821fe9e4bc",
+                "role": "Admin",
+            }),
+            headers: {"Authorization": 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMmU3N2IxZWEtODA3Zi00M2M1LWEwNjUtOTJhYTQ1N2Q0MDExIiwidXNlcm5hbWUiOiJRcGlzayIsInRlbGVncmFtX2lkIjo1MDY2NDU1NDIsInJvbGUiOiJBZG1pbiIsImV4cCI6MTc0NzExMDMyN30.9_uIPlkCfLLl35KMzZ4ZXV3_gpcB1CEp80_qs8KEQqY',
+                'Content-Type': 'application/json'},
         });
 
-        console.log("Response status:", ResponseOrder.status);
-        console.log("Response headers:", ResponseOrder.headers);
-        console.log("Response body:", ResponseOrder.body);
+        console.log("Response status:", ResponseOrders.status);
+        console.log("Response headers:", ResponseOrders.headers);
 
-        if (!ResponseOrder.ok) {
-            throw new Error('Не удалось получить заказ');
+        if (!ResponseOrders.ok) {
+            const errorText = await ResponseOrders.text();
+            throw new Error(errorText || 'Не удалось загрузить заказы');
         }
 
-        const data = await ResponseOrder.json();
-
-        console.log("Response data:", data);
-
-        return data || [];
+        return ResponseOrders.ok;
     } catch (err) {
-        return null;
+        return false;
     }
 }
 

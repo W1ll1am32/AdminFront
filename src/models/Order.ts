@@ -59,9 +59,8 @@ export interface OrderEdit {
     is_responded: boolean;
 }
 
-export interface OrderPagination {
+export interface Orders {
     Orders: Order[];
-    Pages: number;
 }
 
 export interface Tutor {
